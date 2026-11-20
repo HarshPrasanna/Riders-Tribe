@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riders Tribe™ — Roll Call, Name Tags & Ride Poll</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    .glass-card {
+      background: rgba(20, 27, 45, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      backdrop-filter: blur(12px);
+    }
+    .nametag-lanyard {
+      background: linear-gradient(135deg, #111827 0%, #1e293b 60%, #271a0c 100%);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 24px -6px rgba(245, 158, 11, 0.18);
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- Top Header -->
+  <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-[#0b0f19]/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
+          <svg class="w-6 h-6 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="5.5" cy="17.5" r="3.5" />
+            <circle cx="18.5" cy="17.5" r="3.5" />
+            <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">RIDERS TRIBE™</h1>
+            <span class="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">Registry</span>
+          </div>
+          <p class="text-xs text-slate-400">Roll Call • Name Tags • Winter Ride Poll</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+        <button id="tab-registry-btn" type="button" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-sm flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Roll Call &amp; Registry</span>
+        </button>
+        <button id="tab-poll-btn" type="button" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 flex items-center gap-1.5">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Ride Poll</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Stats Strip -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="glass-card rounded-2xl p-4 flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+          <i data-lucide="user-check" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-slate-400 font-medium">Logged Riders</p>
+          <p id="stat-total-riders" class="text-xl font-bold text-white">0</p>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0">
+          <i data-lucide="map-pin" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-slate-400 font-medium">Sectors / Cities</p>
+          <p id="stat-total-cities" class="text-xl font-bold text-white">0</p>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+          <i data-lucide="bike" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-slate-400 font-medium">Top Hub</p>
+          <p id="stat-top-city" class="text-sm sm:text-base font-bold text-white truncate">—</p>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0">
+          <i data-lucide="vote" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-slate-400 font-medium">Poll Votes</p>
+          <p id="stat-total-votes" class="text-xl font-bold text-white">0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 1: REGISTRY & FORM -->
+    <div id="view-registry" class="space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Column: Roll-Call Form -->
+        <section class="lg:col-span-7 glass-card rounded-2xl p-5 sm:p-6 space-y-5">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 id="form-heading" class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>Drop Your Roll-Call Entry</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Fill in your details below to join the Riders Tribe™ directory and generate your name tag.</p>
+            </div>
+            <button id="cancel-edit-btn" type="button" class="hidden px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition">
+              Cancel Edit
+            </button>
+          </div>
+
+          <form id="rider-form" class="space-y-4">
+            <input type="hidden" id="editing-id" value="" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="input-name" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Full Name *</label>
+                <input id="input-name" type="text" required maxlength="50" placeholder="e.g. Harsh Prasanna"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition" />
+              </div>
+
+              <div>
+                <label for="input-nametag" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Name Tag / Badge</label>
+                <input id="input-nametag" type="text" maxlength="28" placeholder="e.g. @harsh_rt or OG Leader"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="input-bike" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Bike / Machine *</label>
+                <input id="input-bike" type="text" required maxlength="60" placeholder="e.g. Super Meteor 650 / Himalayan 450"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition" />
+              </div>
+
+              <div>
+                <label for="input-location" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Sector / City *</label>
+                <input id="input-location" type="text" required maxlength="50" placeholder="e.g. Greater Noida West"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition" />
+              </div>
+            </div>
+
+            <!-- Emoji + Photo Picker -->
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Pick an Emoji or Attach Photo</span>
+                <div class="flex items-center gap-2">
+                  <label for="input-photo" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-amber-400 border border-slate-700 transition">
+                    <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                    <span>Upload Photo</span>
+                  </label>
+                  <input id="input-photo" type="file" accept="image/*" class="hidden" />
+                  <button id="clear-photo-btn" type="button" class="hidden px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-semibold transition">
+                    Remove Photo
+                  </button>
+                </div>
+              </div>
+
+              <div id="emoji-picker" class="flex flex-wrap gap-2">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <button id="submit-rider-btn" type="submit" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span id="submit-btn-label">Add to Tribe Registry</span>
+              </button>
+
+              <button id="copy-whatsapp-btn" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-4 h-4 text-emerald-400"></i>
+                <span>Copy WhatsApp Format</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Right Column: Live Name Tag Preview -->
+        <aside class="lg:col-span-5 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i data-lucide="badge-check" class="w-4 h-4 text-amber-400"></i>
+              <span>Live Rider Name Tag</span>
+            </h3>
+            <span class="text-[11px] text-slate-400">Updates as you type</span>
+          </div>
+
+          <!-- Name Tag Card -->
+          <div id="nametag-preview-card" class="nametag-lanyard rounded-2xl p-5 relative overflow-hidden">
+            <!-- Lanyard Slot -->
+            <div class="w-14 h-2 rounded-full bg-slate-950/90 border border-slate-700/80 mx-auto mb-4"></div>
+
+            <div class="flex items-center gap-4">
+              <div id="preview-avatar" class="w-16 h-16 rounded-2xl bg-slate-800/90 border-2 border-amber-500/60 flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-inner">
+                🏍️
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span id="preview-nametag" class="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Tribe Rider
+                  </span>
+                </div>
+                <h4 id="preview-name" class="text-lg font-extrabold text-white truncate mt-1">Your Name</h4>
+                <p id="preview-bike" class="text-xs font-medium text-amber-400 truncate flex items-center gap-1 mt-0.5">
+                  <i data-lucide="bike" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span>Your Bike Model</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-300">
+              <span class="flex items-center gap-1.5 truncate">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i>
+                <span id="preview-location" class="truncate">Sector / City</span>
+              </span>
+              <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 shrink-0 ml-2">RIDERS TRIBE™</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2.5">
+            <button id="download-tag-btn" type="button" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-semibold border border-slate-700 transition flex items-center justify-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 text-amber-400"></i>
+              <span>Download Name Tag PNG</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Registry Table / Cards Section -->
+      <section class="glass-card rounded-2xl p-5 sm:p-6 space-y-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Maintained Tribe Directory</h2>
+            <p class="text-xs text-slate-400">Search, filter by locality, edit entries, or export the full roster to CSV / JSON.</p>
+          </div>
+
+          <!-- Maintenance Actions -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="export-csv-btn" type="button" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Export CSV</span>
+            </button>
+            <button id="export-json-btn" type="button" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+              <i data-lucide="braces" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>Backup JSON</span>
+            </button>
+            <label for="import-json-input" class="cursor-pointer px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+              <i data-lucide="upload" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Restore JSON</span>
+            </label>
+            <input id="import-json-input" type="file" accept=".json,application/json" class="hidden" />
+          </div>
+        </div>
+
+        <!-- Search & Locality Filter Bar -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input id="search-input" type="text" placeholder="Search by name, bike, sector/city, or name tag..."
+              class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition" />
+          </div>
+          <div id="city-filters" class="flex items-center gap-1.5 overflow-x-auto scrollbar-thin pb-1 sm:pb-0">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Member Cards Grid -->
+        <div id="registry-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated by JS -->
+        </div>
+
+        <div id="empty-registry-state" class="hidden text-center py-10 space-y-2">
+          <p class="text-3xl">🏍️</p>
+          <p class="text-sm font-semibold text-slate-300">No riders match your filter</p>
+          <p class="text-xs text-slate-500">Try clearing the search box or add a new rider above.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- VIEW 2: RIDE POLL -->
+    <div id="view-poll" class="hidden space-y-6">
+      <section class="glass-card rounded-2xl p-5 sm:p-6 max-w-3xl mx-auto space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <span class="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">Active Tribe Poll</span>
+            <h2 class="text-xl font-extrabold text-white mt-2">Which winter ride or meetup should Riders Tribe™ plan next? 🏍️❄️</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Enter your name (optional) and tap an option to cast your vote.</p>
+          </div>
+          <button id="reset-poll-btn" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition">
+            Reset My Vote
+          </button>
+        </div>
+
+        <div>
+          <label for="poll-voter-name" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Your Name (Optional)</label>
+          <input id="poll-voter-name" type="text" maxlength="40" placeholder="e.g. Harsh Prasanna"
+            class="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition" />
+        </div>
+
+        <div id="poll-options-list" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Add Custom Poll Option -->
+        <form id="add-poll-option-form" class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-2.5">
+          <input id="new-poll-option-input" type="text" maxlength="80" placeholder="Suggest another ride destination or meetup idea..."
+            class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs sm:text-sm font-semibold border border-slate-700 transition whitespace-nowrap">
+            + Add Option
+          </button>
+        </form>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-sm w-full p-6 space-y-4 border border-slate-700 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">Remove Rider Entry?</h3>
+          <p id="delete-modal-text" class="text-xs text-slate-400 mt-0.5">This will remove the rider from your saved registry.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button id="cancel-delete-btn" type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+          Cancel
+        </button>
+        <button id="confirm-delete-btn" type="button" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition">
+          Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="pointer-events-none fixed bottom-5 right-5 z-50 opacity-0 translate-y-2 transition-all duration-200">
+    <div class="px-4 py-2.5 rounded-xl bg-slate-900 border border-amber-500/40 text-sm font-medium text-white shadow-xl flex items-center gap-2">
+      <span id="toast-icon">✅</span>
+      <span id="toast-message">Saved!</span>
+    </div>
+  </div>
+
+  <!-- Hidden Canvas for Name Tag PNG Export -->
+  <canvas id="tag-export-canvas" width="900" height="480" class="hidden"></canvas>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_RIDERS = 'riders_tribe_registry_v1';
+      const STORAGE_KEY_POLL = 'riders_tribe_poll_v1';
+      const STORAGE_KEY_USER_VOTE = 'riders_tribe_user_vote_v1';
+
+      const EMOJIS = ['🏍️', '🔥', '💨', '🤘', '🏔️', '⚡', '🦁', '🛡️', '🏁', '🌏'];
+
+      const DEFAULT_RIDERS = [
+        {
+          id: 'r-1',
+          name: 'Harsh Prasanna',
+          nameTag: 'OG Leader',
+          bike: 'Super Meteor 650 / Himalayan 450',
+          location: 'Greater Noida West',
+          emoji: '🏍️',
+          photo: '',
+          createdAt: '2026-11-20T09:00:00Z'
+        },
+        {
+          id: 'r-2',
+          name: 'Avinash',
+          nameTag: 'Pillar Admin',
+          bike: 'Royal Enfield Interceptor 650',
+          location: 'Noida Sector 62',
+          emoji: '🔥',
+          photo: '',
+          createdAt: '2026-11-20T09:05:00Z'
+        },
+        {
+          id: 'r-3',
+          name: 'Amit',
+          nameTag: 'Road Captain',
+          bike: 'KTM Adventure 390',
+          location: 'Ghaziabad Indirapuram',
+          emoji: '🏔️',
+          photo: '',
+          createdAt: '2026-11-20T09:10:00Z'
+        },
+        {
+          id: 'r-4',
+          name: 'Ankit',
+          nameTag: 'Pillar Admin',
+          bike: 'Triumph Speed 400',
+          location: 'Gurugram',
+          emoji: '⚡',
+          photo: '',
+          createdAt: '2026-11-20T09:15:00Z'
+        },
+        {
+          id: 'r-5',
+          name: 'Nishant',
+          nameTag: 'Tribe Regular',
+          bike: 'Triumph Scrambler 400 X',
+          location: 'Noida Extension',
+          emoji: '🤘',
+          photo: '',
+          createdAt: '2026-11-20T09:20:00Z'
+        },
+        {
+          id: 'r-6',
+          name: 'Pratibha',
+          nameTag: 'OG Rider',
+          bike: 'Royal Enfield Meteor 350',
+          location: 'Delhi NCR',
+          emoji: '🌏',
+          photo: '',
+          createdAt: '2026-11-20T09:25:00Z'
+        }
+      ];
+
+      const DEFAULT_POLL = [
+        { id: 'p-1', label: '🥞 Short Sunday Breakfast Ride (50–80 km – Murthal / Garhmukteshwar / Damdama)', votes: 14, voters: ['Harsh', 'Avinash'] },
+        { id: 'p-2', label: '🏰 Full-Day Heritage Ride (150–200 km – Neemrana / Alwar / Bharatpur)', votes: 19, voters: ['Amit', 'Ankit'] },
+        { id: 'p-3', label: '⛺ Weekend Overnighter (Jim Corbett / Lansdowne / Rishikesh)', votes: 11, voters: ['Nishant'] },
+        { id: 'p-4', label: '🏏 Evening Chai Meetup & Box Cricket (Noida / Gurugram)', votes: 8, voters: ['Pratibha'] },
+        { id: 'p-5', label: '👀 Just here for bike/gear discussions right now', votes: 3, voters: [] }
+      ];
+
+      // Safe localStorage helpers
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      function saveJSON(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+          // Storage full or blocked; keep in-memory state working
+        }
+      }
+
+      // App State
+      let riders = loadJSON(STORAGE_KEY_RIDERS, DEFAULT_RIDERS);
+      let pollOptions = loadJSON(STORAGE_KEY_POLL, DEFAULT_POLL);
+      let userVotedId = loadJSON(STORAGE_KEY_USER_VOTE, null);
+      let selectedEmoji = '🏍️';
+      let uploadedPhotoDataUrl = '';
+      let activeCityFilter = 'All';
+      let searchQuery = '';
+      let pendingDeleteId = null;
+
+      // DOM Elements
+      const tabRegistryBtn = document.getElementById('tab-registry-btn');
+      const tabPollBtn = document.getElementById('tab-poll-btn');
+      const viewRegistry = document.getElementById('view-registry');
+      const viewPoll = document.getElementById('view-poll');
+
+      const riderForm = document.getElementById('rider-form');
+      const editingIdInput = document.getElementById('editing-id');
+      const formHeading = document.getElementById('form-heading');
+      const cancelEditBtn = document.getElementById('cancel-edit-btn');
+      const submitBtnLabel = document.getElementById('submit-btn-label');
+
+      const inputName = document.getElementById('input-name');
+      const inputNametag = document.getElementById('input-nametag');
+      const inputBike = document.getElementById('input-bike');
+      const inputLocation = document.getElementById('input-location');
+      const inputPhoto = document.getElementById('input-photo');
+      const clearPhotoBtn = document.getElementById('clear-photo-btn');
+      const emojiPicker = document.getElementById('emoji-picker');
+
+      const previewAvatar = document.getElementById('preview-avatar');
+      const previewNametag = document.getElementById('preview-nametag');
+      const previewName = document.getElementById('preview-name');
+      const previewBike = document.getElementById('preview-bike');
+      const previewLocation = document.getElementById('preview-location');
+
+      const searchInput = document.getElementById('search-input');
+      const cityFilters = document.getElementById('city-filters');
+      const registryGrid = document.getElementById('registry-grid');
+      const emptyRegistryState = document.getElementById('empty-registry-state');
+
+      const deleteModal = document.getElementById('delete-modal');
+      const deleteModalText = document.getElementById('delete-modal-text');
+      const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+      const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+      const pollOptionsList = document.getElementById('poll-options-list');
+      const pollVoterName = document.getElementById('poll-voter-name');
+      const resetPollBtn = document.getElementById('reset-poll-btn');
+      const addPollOptionForm = document.getElementById('add-poll-option-form');
+      const newPollOptionInput = document.getElementById('new-poll-option-input');
+
+      const toastEl = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastMessage = document.getElementById('toast-message');
+      let toastTimer = null;
+
+      function showToast(msg, icon = '✅') {
+        toastIcon.textContent = icon;
+        toastMessage.textContent = msg;
+        toastEl.classList.remove('opacity-0', 'translate-y-2');
+        toastEl.classList.add('opacity-100', 'translate-y-0');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toastEl.classList.add('opacity-0', 'translate-y-2');
+          toastEl.classList.remove('opacity-100', 'translate-y-0');
+        }, 2600);
+      }
+
+      function escapeHTML(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // Tab Switching
+      function switchTab(tab) {
+        if (tab === 'registry') {
+          viewRegistry.classList.remove('hidden');
+          viewPoll.classList.add('hidden');
+          tabRegistryBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-sm flex items-center gap-1.5';
+          tabPollBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 flex items-center gap-1.5';
+        } else {
+          viewRegistry.classList.add('hidden');
+          viewPoll.classList.remove('hidden');
+          tabPollBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-sm flex items-center gap-1.5';
+          tabRegistryBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 flex items-center gap-1.5';
+        }
+      }
+
+      tabRegistryBtn.addEventListener('click', () => switchTab('registry'));
+      tabPollBtn.addEventListener('click', () => switchTab('poll'));
+
+      // Emoji Picker
+      function renderEmojiPicker() {
+        emojiPicker.innerHTML = EMOJIS.map((em) => {
+          const active = !uploadedPhotoDataUrl && selectedEmoji === em;
+          return `<button type="button" data-emoji="${em}" class="w-9 h-9 rounded-xl text-lg flex items-center justify-center transition ${
+            active
+              ? 'bg-amber-500/25 border-2 border-amber-400 scale-105'
+              : 'bg-slate-800/80 border border-slate-700 hover:bg-slate-700'
+          }">${em}</button>`;
+        }).join('');
+      }
+
+      emojiPicker.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-emoji]');
+        if (!btn) return;
+        selectedEmoji = btn.getAttribute('data-emoji');
+        uploadedPhotoDataUrl = '';
+        inputPhoto.value = '';
+        clearPhotoBtn.classList.add('hidden');
+        renderEmojiPicker();
+        updateLivePreview();
+      });
+
+      // Photo Upload with Client-side Resize
+      inputPhoto.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const img = new Image();
+          img.onload = function () {
+            const maxDim = 256;
+            const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            uploadedPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            clearPhotoBtn.classList.remove('hidden');
+            renderEmojiPicker();
+            updateLivePreview();
+            showToast('Photo attached to your badge!', '📸');
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      clearPhotoBtn.addEventListener('click', () => {
+        uploadedPhotoDataUrl = '';
+        inputPhoto.value = '';
+        clearPhotoBtn.classList.add('hidden');
+        renderEmojiPicker();
+        updateLivePreview();
+      });
+
+      // Live Name Tag Preview
+      function updateLivePreview() {
+        const nameVal = inputName.value.trim() || 'Your Name';
+        const tagVal = inputNametag.value.trim() || 'Tribe Rider';
+        const bikeVal = inputBike.value.trim() || 'Your Bike Model';
+        const locVal = inputLocation.value.trim() || 'Sector / City';
+
+        previewName.textContent = nameVal;
+        previewNametag.textContent = tagVal;
+        previewBike.querySelector('span').textContent = bikeVal;
+        previewLocation.textContent = locVal;
+
+        if (uploadedPhotoDataUrl) {
+          previewAvatar.innerHTML = `<img src="${uploadedPhotoDataUrl}" alt="Rider avatar" class="w-full h-full object-cover" />`;
+        } else {
+          previewAvatar.textContent = selectedEmoji;
+        }
+      }
+
+      [inputName, inputNametag, inputBike, inputLocation].forEach((el) => {
+        el.addEventListener('input', updateLivePreview);
+      });
+
+      // Submit Form (Add or Update)
+      riderForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = inputName.value.trim();
+        const bike = inputBike.value.trim();
+        const location = inputLocation.value.trim();
+        const nameTag = inputNametag.value.trim() || 'Tribe Rider';
+
+        if (!name || !bike || !location) {
+          showToast('Please fill in Name, Bike, and Sector/City.', '⚠️');
+          return;
+        }
+
+        const editId = editingIdInput.value;
+        if (editId) {
+          riders = riders.map((r) =>
+            r.id === editId
+              ? { ...r, name, nameTag, bike, location, emoji: selectedEmoji, photo: uploadedPhotoDataUrl }
+              : r
+          );
+          showToast(`Updated ${name}'s record!`, '✅');
+        } else {
+          const newRider = {
+            id: 'r-' + Date.now(),
+            name,
+            nameTag,
+            bike,
+            location,
+            emoji: selectedEmoji,
+            photo: uploadedPhotoDataUrl,
+            createdAt: new Date().toISOString()
+          };
+          riders.unshift(newRider);
+          showToast(`Welcome to the registry, ${name}!`, '🏍️');
+        }
+
+        saveJSON(STORAGE_KEY_RIDERS, riders);
+        resetForm();
+        renderAll();
+      });
+
+      function resetForm() {
+        editingIdInput.value = '';
+        riderForm.reset();
+        selectedEmoji = '🏍️';
+        uploadedPhotoDataUrl = '';
+        clearPhotoBtn.classList.add('hidden');
+        cancelEditBtn.classList.add('hidden');
+        submitBtnLabel.textContent = 'Add to Tribe Registry';
+        formHeading.querySelector('span:last-child').textContent = 'Drop Your Roll-Call Entry';
+        renderEmojiPicker();
+        updateLivePreview();
+      }
+
+      cancelEditBtn.addEventListener('click', resetForm);
+
+      // Copy WhatsApp Roll-Call Format
+      function copyTextFallback(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+        } else {
+          legacyCopy(text);
+        }
+      }
+
+      function legacyCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
+        document.body.removeChild(ta);
+      }
+
+      document.getElementById('copy-whatsapp-btn').addEventListener('click', () => {
+        const name = inputName.value.trim() || 'Your Name';
+        const bike = inputBike.value.trim() || 'Your Bike';
+        const loc = inputLocation.value.trim() || 'Sector / City';
+        const tag = inputNametag.value.trim();
+        const badgeLine = tag ? `\n🏷️ *Tag:* ${tag}` : '';
+        const text = `${selectedEmoji} *Name:* ${name}\n🏍️ *Bike:* ${bike}\n📍 *Sector / City:* ${loc}${badgeLine}`;
+        copyTextFallback(text);
+        showToast('Copied WhatsApp roll-call format!', '📋');
+      });
+
+      // Download Name Tag as PNG
+      document.getElementById('download-tag-btn').addEventListener('click', () => {
+        const canvas = document.getElementById('tag-export-canvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // Background gradient
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(0.6, '#1e293b');
+        grad.addColorStop(1, '#2d1c0c');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Border
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(14, 14, W - 28, H - 28);
+
+        // Top stripe
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(14, 14, W - 28, 12);
+
+        // Header Text
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 24px Inter, sans-serif';
+        ctx.fillText('RIDERS TRIBE™  •  OFFICIAL NAME TAG', 48, 74);
+
+        const nameVal = inputName.value.trim() || 'Your Name';
+        const tagVal = (inputNametag.value.trim() || 'Tribe Rider').toUpperCase();
+        const bikeVal = inputBike.value.trim() || 'Your Bike Model';
+        const locVal = inputLocation.value.trim() || 'Sector / City';
+
+        function drawTextAndSave() {
+          // Badge pill
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+          ctx.fillRect(260, 130, Math.min(ctx.measureText(tagVal).width + 36, 480), 42);
+          ctx.fillStyle = '#fcd34d';
+          ctx.font = 'bold 20px Inter, sans-serif';
+          ctx.fillText(tagVal, 278, 158);
+
+          // Name
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 46px Inter, sans-serif';
+          ctx.fillText(nameVal.slice(0, 24), 260, 228);
+
+          // Bike
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '600 28px Inter, sans-serif';
+          ctx.fillText('🏍️ ' + bikeVal.slice(0, 34), 260, 286);
+
+          // Location
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '500 26px Inter, sans-serif';
+          ctx.fillText('📍 ' + locVal.slice(0, 36), 260, 340);
+
+          // Footer
+          ctx.fillStyle = '#64748b';
+          ctx.font = '600 18px Inter, sans-serif';
+          ctx.fillText('NO FIZZ • NO FUZZ • PURE BROTHERHOOD', 48, 430);
+
+          const link = document.createElement('a');
+          link.download = `${nameVal.toLowerCase().replace(/[^a-z0-9]+/g, '_')}_nametag.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          showToast('Name Tag PNG downloaded!', '🪪');
+        }
+
+        // Draw Avatar Box
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(48, 130, 180, 180);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(48, 130, 180, 180);
+
+        if (uploadedPhotoDataUrl) {
+          const img = new Image();
+          img.onload = function () {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(50, 132, 176, 176);
+            ctx.clip();
+            ctx.drawImage(img, 50, 132, 176, 176);
+            ctx.restore();
+            drawTextAndSave();
+          };
+          img.src = uploadedPhotoDataUrl;
+        } else {
+          ctx.font = '90px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(selectedEmoji, 138, 224);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+          drawTextAndSave();
+        }
+      });
+
+      // Stats & City Filters
+      function updateStats() {
+        document.getElementById('stat-total-riders').textContent = riders.length;
+        const cities = riders.map((r) => r.location.trim()).filter(Boolean);
+        const uniqueCities = [...new Set(cities)];
+        document.getElementById('stat-total-cities').textContent = uniqueCities.length;
+
+        if (cities.length) {
+          const counts = {};
+          cities.forEach((c) => { counts[c] = (counts[c] || 0) + 1; });
+          const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+          document.getElementById('stat-top-city').textContent = `${top[0]} (${top[1]})`;
+        } else {
+          document.getElementById('stat-top-city').textContent = '—';
+        }
+
+        const totalVotes = pollOptions.reduce((sum, opt) => sum + opt.votes, 0);
+        document.getElementById('stat-total-votes').textContent = totalVotes;
+      }
+
+      function renderCityFilters() {
+        const uniqueCities = ['All', ...new Set(riders.map((r) => r.location.trim()).filter(Boolean))];
+        if (!uniqueCities.includes(activeCityFilter)) {
+          activeCityFilter = 'All';
+        }
+        cityFilters.innerHTML = uniqueCities.map((city) => {
+          const isActive = city === activeCityFilter;
+          return `<button type="button" data-city="${escapeHTML(city)}" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+            isActive
+              ? 'bg-amber-500 text-slate-950'
+              : 'bg-slate-900/90 text-slate-300 border border-slate-700/80 hover:bg-slate-800'
+          }">${escapeHTML(city)}</button>`;
+        }).join('');
+      }
+
+      cityFilters.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-city]');
+        if (!btn) return;
+        activeCityFilter = btn.getAttribute('data-city');
+        renderCityFilters();
+        renderRegistry();
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderRegistry();
+      });
+
+      // Render Registry Cards
+      function renderRegistry() {
+        const filtered = riders.filter((r) => {
+          const matchesCity = activeCityFilter === 'All' || r.location.trim() === activeCityFilter;
+          const haystack = `${r.name} ${r.bike} ${r.location} ${r.nameTag}`.toLowerCase();
+          const matchesQuery = !searchQuery || haystack.includes(searchQuery);
+          return matchesCity && matchesQuery;
+        });
+
+        if (filtered.length === 0) {
+          registryGrid.innerHTML = '';
+          emptyRegistryState.classList.remove('hidden');
+          return;
+        }
+
+        emptyRegistryState.classList.add('hidden');
+        registryGrid.innerHTML = filtered.map((r) => {
+          const avatarHtml = r.photo
+            ? `<img src="${r.photo}" alt="${escapeHTML(r.name)}" class="w-full h-full object-cover" />`
+            : `<span>${escapeHTML(r.emoji || '🏍️')}</span>`;
+
+          return `
+            <article class="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 p-4 flex flex-col justify-between gap-3 transition group">
+              <div class="flex items-start gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                  ${avatarHtml}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/25 truncate">
+                      ${escapeHTML(r.nameTag || 'Tribe Rider')}
+                    </span>
+                  </div>
+                  <h3 class="text-base font-bold text-white truncate mt-1">${escapeHTML(r.name)}</h3>
+                  <p class="text-xs font-medium text-amber-400 truncate mt-0.5">🏍️ ${escapeHTML(r.bike)}</p>
+                  <p class="text-xs text-slate-400 truncate mt-0.5">📍 ${escapeHTML(r.location)}</p>
+                </div>
+              </div>
+
+              <div class="pt-2.5 border-t border-slate-800/90 flex items-center justify-between gap-2">
+                <button type="button" data-action="preview" data-id="${escapeHTML(r.id)}" class="text-xs font-semibold text-sky-400 hover:text-sky-300 transition">
+                  Load Name Tag
+                </button>
+                <div class="flex items-center gap-2">
+                  <button type="button" data-action="edit" data-id="${escapeHTML(r.id)}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">
+                    Edit
+                  </button>
+                  <button type="button" data-action="delete" data-id="${escapeHTML(r.id)}" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-400 transition">
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      registryGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        const id = btn.getAttribute('data-id');
+        const rider = riders.find((r) => r.id === id);
+        if (!rider) return;
+
+        if (action === 'preview' || action === 'edit') {
+          inputName.value = rider.name;
+          inputNametag.value = rider.nameTag || '';
+          inputBike.value = rider.bike;
+          inputLocation.value = rider.location;
+          selectedEmoji = rider.emoji || '🏍️';
+          uploadedPhotoDataUrl = rider.photo || '';
+          if (uploadedPhotoDataUrl) {
+            clearPhotoBtn.classList.remove('hidden');
+          } else {
+            clearPhotoBtn.classList.add('hidden');
+          }
+          renderEmojiPicker();
+          updateLivePreview();
+
+          if (action === 'edit') {
+            editingIdInput.value = rider.id;
+            submitBtnLabel.textContent = 'Save Changes';
+            formHeading.querySelector('span:last-child').textContent = `Editing ${rider.name}`;
+            cancelEditBtn.classList.remove('hidden');
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (action === 'delete') {
+          pendingDeleteId = id;
+          deleteModalText.textContent = `Remove ${rider.name} (${rider.bike}) from the Riders Tribe™ registry?`;
+          deleteModal.classList.remove('hidden');
+        }
+      });
+
+      cancelDeleteBtn.addEventListener('click', () => {
+        pendingDeleteId = null;
+        deleteModal.classList.add('hidden');
+      });
+
+      confirmDeleteBtn.addEventListener('click', () => {
+        if (pendingDeleteId) {
+          riders = riders.filter((r) => r.id !== pendingDeleteId);
+          saveJSON(STORAGE_KEY_RIDERS, riders);
+          if (editingIdInput.value === pendingDeleteId) {
+            resetForm();
+          }
+          pendingDeleteId = null;
+          deleteModal.classList.add('hidden');
+          renderAll();
+          showToast('Rider entry removed.', '🗑️');
+        }
+      });
+
+      // CSV & JSON Maintenance
+      document.getElementById('export-csv-btn').addEventListener('click', () => {
+        const headers = ['Name', 'Name Tag', 'Bike', 'Sector / City', 'Emoji', 'Created At'];
+        const rows = riders.map((r) =>
+          [r.name, r.nameTag, r.bike, r.location, r.emoji, r.createdAt]
+            .map((v) => `"${String(v || '').replace(/"/g, '""')}"`)
+            .join(',')
+        );
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'riders_tribe_registry.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Exported CSV roster!', '📊');
+      });
+
+      document.getElementById('export-json-btn').addEventListener('click', () => {
+        const payload = { exportedAt: new Date().toISOString(), riders, pollOptions };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'riders_tribe_backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Backup JSON downloaded!', '💾');
+      });
+
+      document.getElementById('import-json-input').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            if (Array.isArray(parsed.riders)) {
+              riders = parsed.riders;
+              saveJSON(STORAGE_KEY_RIDERS, riders);
+            }
+            if (Array.isArray(parsed.pollOptions)) {
+              pollOptions = parsed.pollOptions;
+              saveJSON(STORAGE_KEY_POLL, pollOptions);
+            }
+            renderAll();
+            showToast('Registry restored from JSON!', '✅');
+          } catch (err) {
+            showToast('Invalid JSON backup file.', '⚠️');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // Poll Rendering & Voting
+      function renderPoll() {
+        const totalVotes = pollOptions.reduce((sum, o) => sum + o.votes, 0);
+        pollOptionsList.innerHTML = pollOptions.map((opt) => {
+          const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+          const isSelected = userVotedId === opt.id;
+          const votersPreview = opt.voters && opt.voters.length
+            ? `Voters: ${opt.voters.slice(-4).map(escapeHTML).join(', ')}${opt.voters.length > 4 ? ` +${opt.voters.length - 4}` : ''}`
+            : 'Be the first to vote';
+
+          return `
+            <button type="button" data-poll-id="${escapeHTML(opt.id)}" class="w-full text-left rounded-xl p-3.5 sm:p-4 border transition relative overflow-hidden ${
+              isSelected
+                ? 'border-amber-500 bg-amber-500/10'
+                : 'border-slate-800 bg-slate-900/75 hover:border-slate-600'
+            }">
+              <div class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-300" style="width: ${pct}%"></div>
+              <div class="relative flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-semibold text-white">${escapeHTML(opt.label)}</p>
+                  <p class="text-[11px] text-slate-400 mt-0.5">${votersPreview}</p>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-sm font-bold ${isSelected ? 'text-amber-400' : 'text-slate-200'}">${pct}%</span>
+                  <p class="text-[11px] text-slate-400">${opt.votes} ${opt.votes === 1 ? 'vote' : 'votes'}</p>
+                </div>
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      pollOptionsList.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-poll-id]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-poll-id');
+        const voterName = pollVoterName.value.trim();
+
+        if (userVotedId === id) {
+          showToast('You already voted for this option!', 'ℹ️');
+          return;
+        }
+
+        // Remove previous vote if switching
+        if (userVotedId) {
+          pollOptions = pollOptions.map((o) =>
+            o.id === userVotedId ? { ...o, votes: Math.max(0, o.votes - 1) } : o
+          );
+        }
+
+        pollOptions = pollOptions.map((o) => {
+          if (o.id !== id) return o;
+          const updatedVoters = voterName && !o.voters.includes(voterName)
+            ? [...o.voters, voterName]
+            : o.voters;
+          return { ...o, votes: o.votes + 1, voters: updatedVoters };
+        });
+
+        userVotedId = id;
+        saveJSON(STORAGE_KEY_POLL, pollOptions);
+        saveJSON(STORAGE_KEY_USER_VOTE, userVotedId);
+        renderPoll();
+        updateStats();
+        showToast('Vote recorded!', '🗳️');
+      });
+
+      resetPollBtn.addEventListener('click', () => {
+        if (!userVotedId) {
+          showToast('No active vote to reset.', 'ℹ️');
+          return;
+        }
+        pollOptions = pollOptions.map((o) =>
+          o.id === userVotedId ? { ...o, votes: Math.max(0, o.votes - 1) } : o
+        );
+        userVotedId = null;
+        saveJSON(STORAGE_KEY_POLL, pollOptions);
+        saveJSON(STORAGE_KEY_USER_VOTE, null);
+        renderPoll();
+        updateStats();
+        showToast('Your vote was cleared.', '🔄');
+      });
+
+      addPollOptionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const label = newPollOptionInput.value.trim();
+        if (!label) return;
+        pollOptions.push({ id: 'p-' + Date.now(), label, votes: 0, voters: [] });
+        newPollOptionInput.value = '';
+        saveJSON(STORAGE_KEY_POLL, pollOptions);
+        renderPoll();
+        showToast('Added new poll option!', '➕');
+      });
+
+      function renderAll() {
+        updateStats();
+        renderCityFilters();
+        renderRegistry();
+        renderPoll();
+      }
+
+      // Initialize
+      renderEmojiPicker();
+      updateLivePreview();
+      renderAll();
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    })();
+  </script>
+</body>
+</html>
